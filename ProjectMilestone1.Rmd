@@ -1,0 +1,109 @@
+---
+title: "Project Milestone 1"
+author: "Steve Chen"
+date: "February 13, 2019"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Basic Information
+
+* Project Title: Association of Opioid Marketing, Physician Speciality, and Prescribing Rates
+* Name: Steve Chen
+* Email Address: [steve.chen@emory.edu](mailto:steve.chen@emory.edu)
+
+### Key Links
+
+* GitHub repository: [https://github.com/chenssteve/NRSG741final.git](https://github.com/chenssteve/NRSG741final.git)
+* Data Source:
+    + CMS Open Payments: [https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html)
+    + CDC County-Level Opioid Prescribing Rates: [https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html](https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html)
+    + Census Bureau County-Level Population Estimates: [https://www.census.gov/programs-surveys/acs/](https://www.census.gov/programs-surveys/acs/)
+
+### Overview and Motivation
+*Why did you undertake this particular project? What inspired you, what are your background and research interests that may have influenced your decision?*
+
+The number of opioid-related deaths has [skyrocked](https://www.drugabuse.gov/related-topics/trends-statistics/overdose-death-rates) in recent years, rising from 18,515 in 2007 to 47,600 in 2017. Prescription opioids account for an estimated 40% of all opioid-related overdoses and often are used by those with opioid use disorders before their transition to illicit opioids.
+
+Significant media attention has focused on the role of pharmaceutical manufacturers in the opioid epidemic. These companies often send sales representatives to hospitals and physician offices to promote their products. While the industry claims that these activities empower health care professionals with scientific and educational information about new clinical products and treatments, a growing body of evidence suggests that these detailing practices exert a negative influence on physician behavior. In a systematic review, [Brax et al. (2017)](https://www.ncbi.nlm.nih.gov/pubmed/28406971) find that physician interaction with pharmaceutical companies is associated with increased inappropriate prescribing, decreased prescribing quality, and increased prescription costs.
+
+Little research has formally investigated how physician detailing has potentially contributed to the opioid epidemic. Approximately 1 in 12 physicians and 1 in 5 family physicians received opioid-related payments totalling $39.7 million from a pharmaceutical manufactuer between 2013 and 2015 ([Hadland, Krieger & Marshall, 2017](https://www.ncbi.nlm.nih.gov/pubmed/28787210)). Most recently, evidence suggests that increases in county-level opioid marketing was associated with increased opioid prescribing rates and opioid-related overdose mortality the following year ([Hadland et al., 2019](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2720914)).
+
+This project is guided by my interest in understanding how different health care stakeholders utilize and respond to financial incentives to affect health care utilization and health outcomes. The recent opioid epidemic is an especially important case study into how policy, business, and culture intersect to affect health and health care across the United States. The crisis is the product of large national and regional trends unfolding in deeply local contexts. All players in the health care system - hospitals, physicians, insurers, pharmaceutical companies, government, advocacy groups, and patients - have contributed to shaping how the crisis has unfolded. Recent health policy and health services research has only begun to unfold the relative contribution of each stakeholder.
+
+The project would also allow me to develop and refine skills to synthesize information across multiple large data sets, perform appropriate analytic methods, and present results in a visually engaging manner.
+
+### Project Objectives
+*What is the primary focal question that you are trying to answer? What would you like to learn and accomplish?*
+
+Given that opioid prescribing rates vary tremendously by medical speciality ([Levy et al., 2015](https://www.ncbi.nlm.nih.gov/pubmed/25896191)), it would be important to **examine the effects of opioid-related payments by speciality on county-level opioid prescribing rates**. Using a similar methodology as was used by [Hadland et al.](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2720914), I plan to group opioid-related payment data by physician speciality and link them to data on county-level opioid prescribing rates the following year. I hope to determine whether pharmaceutical direct-to-physician marketing of opioid products among medical specialties differentially impacts overall opioid prescibing rates.
+
+### Data
+*From where and how are you acquiring your data? Provide a link to your data source.*
+
+The Centers for Medicare and Medicaid Services (CMS) provides data on payments made by pharmaceutical companies to providers for research, meals, travel, gifts, or speaking fees. The Open Payments data set includes payment information as well as details on the pharmaceutical company, physician (including name, speciality, and location with zip code identifiers), and marketed pharmaceutical product. The data was made publicly available as a result of the Physician Payments Sunshine Act and can be downloaded here: [https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html).
+
+The Centers for Disease Control and Prevention (CDC) provides data on county-level opioid prescribing rates. The data is available for most US counties and can be downloaded here: [https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html](https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html).
+
+The Census Bureau provides data on county-level population estimates. The data is publicly available and can be downloaded here: [https://www.census.gov/programs-surveys/acs/](https://www.census.gov/programs-surveys/acs/). If time allows, additional county-level sociodemographic covariates will also be retrieved (e.g. unemployment rate, median househould income, poverty rate).
+
+### Data Wrangling
+*Do you anticipate that there will be extensive data cleaning / reshaping / extraction? Are there questions you will need to calculate in your data (e.g., perhaps you have height and weight, but not BMI)? How will you implement this particular data wrangling step?*
+
+* Relevant opioid-related physician payment data will be identified using a [list](https://www.fda.gov/downloads/Drugs/DrugSafety/InformationbyDrugClass/UCM348818.pdf) provided by the FDA and extracted from the Open Payments database.
+* Physician data will be grouped by zip code. These will need to be converted to Federal Information Processing System (FIPS) codes to allow for linkage with county-level opioid prescribing data.
+* County-level opioid prescribing data will be extracted from the CDC website.
+* County-level population estimates will be extracted rom the American Community Survey (ACS).
+* The final data set will link the number of physicians receiving marketing per 1000 county population, by speciality, with county-level opioid prescribing data.
+
+I plan to complete all data management and analysis using R.
+
+### Exploratory Analysis
+*Which methods / visualizations are you planning to use to explore your tidy dataset?*
+
+Table 1 will provide summary means and standard deviations of the number of primary care physicians receiving payments, number of specialists receiving payments, and the opioid prescribing rate per county.
+
+County Characteristic  | Total No. of Primary Care Physicians Receiving Payments per 1000 County Population | Total No. of Specialists Receiving Payments per 1000 County Population | Opioid Prescribing Rate per 100 County Population
+---------------- | ---------------- | ---------------- | ----------------
+All Counties  |   |   | 
+**Poverty**  |   |   | 
+Counties with Low Poverty  |   |   | 
+Counties with High Poverty  |   |   | 
+**Unemployment**  |   |   | 
+Counties with Low Unemployment  |   |   | 
+Counties with High Unemployment  |   |   | 
+**Median Household Income**  |   |   | 
+Counties with Low Median Household Income  |   |   | 
+Counties with High Median Household Income  |   |   | 
+
+Additionally, I hope to visually explore on a map the number of (primary care, specialist) physicians receiving marketing per 1000 county population and county-level opioid prescribing rates.
+
+### Analysis
+*How are you planning to analyze your data?*
+
+I plan to use negative binomial regression to measure the association between physician speciality, number of physicians receiving marketing per 1000 county population, and county-level opioid prescribing rates. If time allows, I will conduct multivariate analyses to adjust for county-level sociodemographic covariates.
+
+### Timeline
+*Schedule, keeping in mind the due dates listed above for the intermediate and final milestones, make a plan to meet these deadlines. Write these in terms of weekly tasks / goals.*
+
+Date | Responsibilities
+------------- | -----------------------------------
+February 13 | Project Milestone 1
+February 20 | Extract all relevant data sets from CMS, CDC, and the Census Bureau
+February 27 | Clean the CMS data set to include all relevant observations (identify observations with opioid product)
+March 06 | Clean the CDC data set and link the CMS and CDC data sets on FIPS code (need to convert ZIP codes to FIPS codes)
+March 13 | Clean the ACS data set to include all relevant variables and link with CMS/CDC data set to produce final data set
+March 20 | Conduct exploratory analysis to create Table 1 and relevant maps to geographically present the data
+March 27 | Project Milestone 2
+April 03 | Begin to analyze the data set using negative binomial regression
+April 10 | Conduct multivariate negative binomial regression to evaluate the effects of sociodemographic covariates
+April 17 | Write up relevant conclusions into manuscript
+April 24 | Develop presentation and finalize manuscript
+May 01 | Project Milestone 3
+
