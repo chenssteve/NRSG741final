@@ -24,7 +24,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * Data Source:
     + CMS Open Payments: [https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html](https://www.cms.gov/OpenPayments/Explore-the-Data/Dataset-Downloads.html)
     + CDC County-Level Opioid Prescribing Rates: [https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html](https://www.cdc.gov/drugoverdose/maps/rxrate-maps.html)
-    + Census Bureau County-Level Population Estimates: [https://www.census.gov/programs-surveys/acs/](https://www.census.gov/programs-surveys/acs/)
+    + Census Bureau County-Level Population Estimates (ACS): [https://www.census.gov/programs-surveys/acs/](https://www.census.gov/programs-surveys/acs/)
 
 ### Overview and Motivation
 *Why did you undertake this particular project? What inspired you, what are your background and research interests that may have influenced your decision?*
