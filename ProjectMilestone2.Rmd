@@ -1,0 +1,222 @@
+---
+title: "Project Milestone 2"
+author: "Steve Chen"
+date: "March 27, 2019"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Basic Information
+
+* Project Title: Unstable Housing and Hypertension-Related Emergency Department Hospitalizations among Health Center Patients
+* Name: Steve Chen
+* Email Address: [steve.chen@emory.edu](mailto:steve.chen@emory.edu)
+
+### Key Links
+
+* GitHub repository: [https://github.com/chenssteve/NRSG741final.git](https://github.com/chenssteve/NRSG741final.git)
+* Data Source:
+    + Health Center Patient Survey [https://bphc.hrsa.gov/datareporting/research/hcpsurvey/index.html](https://bphc.hrsa.gov/datareporting/research/hcpsurvey/index.html)
+
+### Project Objectives
+*What is the primary focal question that you are trying to answer? What would you like to learn and accomplish?*
+
+The objective of this project is to determine whether there is an association between unstable housing and hypertension-associated emergency department utilization among patients seeking care at federally qualified health centers (FQHCs). The results of the study will inform the role of housing in determining health care utilization among safety net clinic patients.
+
+Note that this question is completely different than the original study question proposed in Project Milestone 1. This is due to changing personal research interests as well as a desire to align the project's research outcomes with my MSPH thesis, which will leverage this dataset as well. 
+
+### Data
+*From where and how are you acquiring your data? Provide a link to your data source.*
+
+The Health Center Patient Survey (HCPS) is a nationally representative survey of patients who receive care at federally-funded safety net health centers. The survey is sponosred by the Health Resources & Services Administration and provides data on how well health centers meet the health care needs of the medically underserved. The HCPS is administered every five years, with the most recent dataset obtained in 2014. Survey data is obtained from in-person, one-on-one interview with a nationally representative sample of health center patients. 
+
+The dataset is [publicly available](https://bphc.hrsa.gov/datareporting/research/hcpsurvey/index.html) on the HRSA website for download. It is availale in SPSS, SAS, and STATA file formats.
+
+### Methods
+The dataset was appropriately imported into R from the STATA file format.
+
+```{r import, tidy=TRUE}
+library(foreign)
+data <- read.dta("/Users/Steve/Box Sync/Emory MSPH/Spring 2019/NRSG 741/NRSG741final/PUF.dta")
+```
+
+Relevant variables were selected from the dataset.
+
+* Identification and survey weights: zrid, analwt, vestr
+* Hypertension indicators: con10, con10c
+* Emergency room use due to hypertension: foll_conf3e
+* Unstable housing indicators: liv6, liv7_r, liv4, liv1_r
+* Sociodemographic covariates: intage_r, edit_gen, final_race, ins2, ins4, ins5, ins6, ins7, ins8, ins9, education, fpl, int4, dmo1, urban
+* Facility indicators: ptype
+
+```{r subset, tidy=TRUE}
+library(dplyr)
+subsetdata <- data %>%
+  select("zrid", "analwt", "vestr", "verep", "con10", "con10c", "liv6", "liv7_r", "liv4", "liv1_r", "foll_conf3e", "intage_r", "edit_gen", "final_race", "ins2", "ins4", "ins5", "ins6", "ins7", "ins8", "ins9", "education", "fpl", "int4", "dmo1", "urban", "ptype")
+```
+
+The study sample included all adults (aged 18 years or older) who reported being told by a doctor or health professional that they had high blood pressure. The data was cleaned appropriately.
+
+* Hypertension: con10/con10c: "YES"
+* Age: intage_r: 18+
+
+```{r subset inclusion, tidy=TRUE}
+subsetdata1 <- subsetdata %>%
+  filter(intage_r != "0-11" & intage_r !="12-17") %>%
+  filter(con10 == "YES" | con10c == "YES")
+```
+
+Next, we created a new variable to identify those individuals who lived in unstable housing. Unstable housing was defined using similar critiera found in previous studies. They included those who reported that were staying in a house or apartment that they did not own or rent, those who did not have enough money to pay their rent or mortgage, and those who reported two or more moves within the past year. Those who reported none of these issues were classifed as having stable housing. Individuals experiencing homelessness were removed from the study sample, given their unique health care challenges faced that may be different from those faced by individuals living in unstable housing.
+
+```{r subset housing, tidy=TRUE}
+# Remove individuals experiencing homelessness.
+subsetdata2 <- subsetdata1 %>%
+  filter(liv1_r == "A HOUSE, TOWNHOUSE, OR MOBILE HOME" | liv1_r == "AN APARTMENT OR CONDO")
+
+# Create indicator variable for unstable housing.
+subsetdata2$unstable <- NA
+
+subsetdata2$unstable[subsetdata2$liv4 == "YES"] <- "NO"
+subsetdata2$unstable[subsetdata2$liv6 == "NO"] <- "NO"
+subsetdata2$unstable[subsetdata2$liv7_r == "0" | subsetdata2$liv7_r == "1"] <- "NO"
+subsetdata2$unstable[subsetdata2$liv4 == "NO"] <- "YES"
+subsetdata2$unstable[subsetdata2$liv6 == "YES"] <- "YES"
+subsetdata2$unstable[subsetdata2$liv7_r == "2" | subsetdata2$liv7_r == "3" | subsetdata2$liv7_r == "4"] <- "YES"
+
+# Remove individuals who did not answer (1) whether they owned or rented their home, (2) whether they had challenges affording rent/mortgage, or (3) the number of times they have moved.
+subsetdata3 <- subsetdata2 %>%
+  filter(!is.na(unstable))
+
+# Confirm the dataset was cleaned.
+library(janitor)
+subsetdata3 %>%
+  janitor::tabyl(liv4, unstable)
+
+subsetdata3 %>%
+  janitor::tabyl(liv6, unstable)
+
+subsetdata3 %>%
+  janitor::tabyl(liv7_r, unstable)
+```
+
+We then removed and cleaned the focal dependent variable measuring self-reported hypertension-related ER utilization. As part of the survey, participants were asked whether they visited the hospital or emergency room due to hypertension. We are only interested in those who responded "Yes" or "No."
+
+```{r hypertension clean, tidy=TRUE}
+subsetdata4 <- subsetdata3
+subsetdata4$foll_conf3e[subsetdata4$foll_conf3e == "Don't know"] <- NA
+
+subsetdata4 <- subsetdata4 %>%
+  filter(!is.na(foll_conf3e))
+
+subsetdata4 %>%
+  janitor::tabyl(foll_conf3e, unstable)
+
+finalsub <- subsetdata4
+
+finalsub$er <- relevel(finalsub$foll_conf3e, ref="NO")
+```
+
+Lastly, we included and cleaned the sociodemographic covariate measures, including age, gender, race, education, income, primary language, nationality, urbanicity, insurance, and center type.
+
+```{r demog clean, tidy=TRUE}
+
+# Create indicator variable for insured / uninsred.
+finalsub$ins <- NA
+
+finalsub$ins[finalsub$ins2 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins4 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins5 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins6 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins7 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins8 == "NO"] <- "NO"
+finalsub$ins[finalsub$ins9 == "NO"] <- "NO"
+
+finalsub$ins[finalsub$ins2 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins4 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins5 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins6 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins7 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins8 == "YES"] <- "YES"
+finalsub$ins[finalsub$ins9 == "YES"] <- "YES"
+
+finalsub$ins.f <- factor(finalsub$ins, levels = c("YES", "NO"))
+
+# Clean missing values for race and nationality.
+finalsub$race_char <- as.character(finalsub$final_race)
+finalsub$race_char[finalsub$race_char == "Refusal"] <- NA
+finalsub$race <- factor(finalsub$race_char, levels = c("NonHispanic White", "NonHispanic Black", "NonHispanic Asian", "NonHispanic Other", "Hispanic"))
+
+finalsub$dmo1[finalsub$dmo1 == "Don't know"] <- NA
+
+# Convert education into a factor to accurately present it as a categorical variable.
+finalsub$education.f <- factor(finalsub$education, levels = 1:3, labels = c("Less than high school", "High school", "More than high school"))
+
+# Rename variables for easy presentation.
+finalsub$ins <- finalsub$ins.f
+finalsub$age <- finalsub$intage_r
+finalsub$gender <- finalsub$edit_gen
+finalsub$education <- finalsub$education.f
+finalsub$fpl <- finalsub$fpl
+finalsub$lang <- finalsub$int4
+finalsub$nation <- finalsub$dmo1
+finalsub$urban <- finalsub$urban
+finalsub$ptype <- finalsub$ptype
+
+finalsub_demog <- finalsub %>%
+  select("unstable", "er", "gender", "race", "age", "education", "fpl", "lang", "nation", "urban", "ins", "ptype", "zrid", "vestr", "analwt")
+
+# Drop missing categories
+finalsub_demog <- droplevels(finalsub_demog)
+```
+
+### Analysis
+
+We first conducted descriptive analyses of both unweighted and weighted data. Statistical comparisons for significance were conducted using chi square and ANOVA tests.
+```{r tableone, tidy=TRUE}
+library(tableone)
+vars = c("age", "gender", "race", "education", "fpl", "lang", "nation", "urban", "ins", "ptype")
+
+# Unweighted
+tab1_uw <- tableone::CreateTableOne(vars=vars, strata="unstable", data=finalsub_demog)
+
+tab1_uw
+#summary(tab1_uw)
+
+# Weighted
+library(survey)
+finalsub_demog$analwt <- as.numeric(finalsub_demog$analwt)
+hcpssurvey <- svydesign(ids=~zrid, strata=~vestr, weights=~analwt, data=finalsub_demog)
+
+tab1 <- tableone::svyCreateTableOne(vars=vars, strata="unstable", data=hcpssurvey)
+tab1
+#summary(tab1)
+```
+
+We then used logistic regression to analyze the association between unstable housing and hypertension-related emergency department visits, while controlling for the various sociodemographic covariates. Three models were created, two reduced models using unweighted and weighted data, and one comprehensive model including sociodemographic covariates using weighted data.
+
+```{r logistic, tidy=TRUE}
+# Basic model, unadjusted for survey weights
+model_basic_unadjust <- glm(er ~ unstable, family=binomial, data=finalsub_demog)
+summary(model_basic_unadjust)
+exp(coef(model_basic_unadjust))
+
+# Basic model, adjusted for survey weights
+model_basic <- svyglm(er ~ unstable, family=binomial(link='logit'), design=hcpssurvey)
+summary(model_basic)
+exp(coef(model_basic))
+
+# Detailed model, adjusted for survey weights
+model <- svyglm(er ~ unstable + age + gender + race + education + fpl + lang + nation + urban + ins + ptype, family=binomial(link='logit'), design=hcpssurvey)
+summary(model)
+exp(coef(model))
+```
+
+### Next Steps
+
+The next steps will involve writing up study analysis results and conclusions. Careful consideration will be made as to how best to visually present this data.
