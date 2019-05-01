@@ -3,9 +3,9 @@ title: "Project Milestone 2"
 author: "Steve Chen"
 date: "March 27, 2019"
 output:
-  pdf_document: default
-  html_document: default
   word_document: default
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -180,11 +180,11 @@ finalsub_demog <- droplevels(finalsub_demog)
 We first conducted descriptive analyses of both unweighted and weighted data. Statistical comparisons for significance were conducted using chi square and ANOVA tests.
 ```{r tableone, tidy=TRUE}
 library(tableone)
+varser = c("er", "age", "gender", "race", "education", "fpl", "lang", "nation", "urban", "ins", "ptype")
 vars = c("age", "gender", "race", "education", "fpl", "lang", "nation", "urban", "ins", "ptype")
 
 # Unweighted
-tab1_uw <- tableone::CreateTableOne(vars=vars, strata="unstable", data=finalsub_demog)
-
+tab1_uw <- tableone::CreateTableOne(vars=varser, strata="unstable", data=finalsub_demog)
 tab1_uw
 #summary(tab1_uw)
 
@@ -193,8 +193,13 @@ library(survey)
 finalsub_demog$analwt <- as.numeric(finalsub_demog$analwt)
 hcpssurvey <- svydesign(ids=~zrid, strata=~vestr, weights=~analwt, data=finalsub_demog)
 
-tab1 <- tableone::svyCreateTableOne(vars=vars, strata="unstable", data=hcpssurvey)
+tab1 <- tableone::svyCreateTableOne(vars=varser, strata="unstable", data=hcpssurvey)
 tab1
+
+# Weighted All
+tab2 <- tableone::svyCreateTableOne(vars=varser, data=hcpssurvey)
+tab2
+
 #summary(tab1)
 ```
 
@@ -215,6 +220,19 @@ exp(coef(model_basic))
 model <- svyglm(er ~ unstable + age + gender + race + education + fpl + lang + nation + urban + ins + ptype, family=binomial(link='logit'), design=hcpssurvey)
 summary(model)
 exp(coef(model))
+```
+
+```{r graph}
+library(ROCR)
+p <- predict(model_basic_unadjust, newdata = finalsub_demog, type = "response")
+pr <- prediction(p, as.numeric(finalsub_demog$er))
+prf <- performance(pr, measure = "tpr", x.measure = "fpr")
+plot(prf)
+abline(a = 0, b = 1, col = "red")
+
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
 ```
 
 ### Next Steps

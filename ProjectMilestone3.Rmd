@@ -1,0 +1,61 @@
+---
+title: "Project Milestone 3"
+author: "Steve Chen"
+date: "May 1, 2019"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Basic Information
+
+* Project Title: Unstable Housing and Hypertension-Related Emergency Department Hospitalizations among Health Center Patients
+* Name: Steve Chen
+* Email Address: [steve.chen@emory.edu](mailto:steve.chen@emory.edu)
+
+### Key Links
+
+* GitHub repository: [https://github.com/chenssteve/NRSG741final.git](https://github.com/chenssteve/NRSG741final.git)
+
+### Introduction
+
+Hypertension is a common disease that increases the risk of heart attack, stroke, heart failure, renal failure, and death. Uncontrolled hypertension is associated with an increased risk of acute cardiovascular events and hypertension-associated emergency department visits. Chronic conditions including hypertension have traditionally been managed in primary care settings, but are increasingly being managed in the emergency department. Between 2006 and 2012, the absolute number of hypertension-related emergency department visits increased by 29.9%.
+
+Proper hypertension management in outpatient and primary care settings can prevent hypertension-associated emergency department visits and hospitalizations. However, hypertension management is affected by numerous socioenvironmental factors that increase stress, affect diet and physical activity, and alter access to health care. In particular, poor neighborhood conditions, homelessness, job security, daily interpersonal conflicts, incarceration, and racial discrimination have all been associated with increased incidence and poor control of hypertension.
+
+Stable housing can be conceptualized as an enabling factor that allows individuals to maintain health and influences health care utilization. While much research has investigated the role of homeless on hypertension outcomes, less is known about the potential of other forms of housing instability such as overcrowded housing, moving frequently, or living doubled up. These types of housing instability, though less severe, are more common than homelessness. Unstable housing conditions can make it difficult to adhere to recommended hypertension management and care, including medication adherence, blood pressure monitoring, and clinic visits. A previous study has found that housing instability may be an important risk factor among particular subpopulations (i.e. white women) which can lead to the development and exacerbation of hypertension. However, little is known how housing instability affects hypertension-related health care use.
+
+Thus, the objective of this project is to determine whether there is an association between unstable housing and hypertension-associated emergency department utilization among patients seeking care at federally qualified health centers (FQHCs). We hypothesize that housing instability will be positively associated with increased hypertension-associated emergency department use.
+
+### Methods
+
+We utilized data from the Health Center Patient Survey (HCPS), a nationally representative survey of patients who receive care at federally-funded safety net health centers. The survey is sponsored by the Health Resources & Services Administration and provides data on how well health centers meet the health care needs of the medically underserved. The HCPS is administered every five years, with the most recent dataset obtained in 2014. Survey data is obtained from in-person, one-on-one interview with a nationally representative sample of health center patients.The dataset is [publicly available](https://bphc.hrsa.gov/datareporting/research/hcpsurvey/index.html) on the HRSA website for download.
+
+For this study, we included included all adults (aged 18 years or older) who reported being told by a doctor or health professional that they had high blood pressure. Unstable housing was defined using similar critiera found in previous studies. They included those who reported that were staying in a house or apartment that they did not own or rent, those who did not have enough money to pay their rent or mortgage, and those who reported two or more moves within the past year. Those who reported none of these issues were classifed as having stable housing. Individuals experiencing homelessness were removed from the study sample, given their unique health care challenges faced that may be different from those faced by individuals living in unstable housing.
+
+The focal dependent variable measured self-reported hypertension-related ER utilization. As part of the survey, participants were asked whether they visited the hospital or emergency room due to hypertension. We were only interested in those who responded “Yes” or “No.” We also included key sociodemographic covariate measures, including age, gender, race, education, income, primary language, nationality, urbanicity, insurance, and center type.
+
+## Statistical Analysis
+
+We first conducted descriptive analyses; statistical comparisons for significance were conducted using chi square and ANOVA tests. We then used logistic regression to analyze the association between unstable housing and hypertension-related emergency department visits, while controlling for the various sociodemographic covariates. Two models were created, one reduced model and one comprehensive model including sociodemographic covariates. All analyses included survey design information and weights and were conducted in R, version 3.5.3.
+
+### Results
+
+There were 1850 survey respondents reporting hypertension, representing 5,896,818 adults diagnosed with hypertension who seek care at federal safety net clinics. Of these, 62.9% reported stable housing and 37.1% reported unstable housing. Most patients received care at Community Health Clinics. Descriptive statisitics are presented in Table 1. Compared to those with stable housing, those with unstable housing were more likely to younger and have lower incomes.
+
+Overall, 9.1% of those with hypertension seeking care at federally qualified health centers reported having a hypertension-related emergency department visit. 12.5% of those with unstable housing report a hypertension-associated emergency department visit, compared to 7.1% of those with stable housing.
+
+In logistic regression analyses, there was no statistically distinguishable association between housing stability and hypertension-related emergency department utilization using either the reduced model or the full model adjusting for confounders (Table 2).
+
+### Discussion
+
+In this nationally representative study of adult patients with hypertension seeking care at federally qualified health centers, we found that unstable housing was not associated with having a hypertension-related emergency department hospitalization.
+
+Potential limitations in our dataset and our measures may have biased the calculated estimates. We relied on self-reported data and thus the rationale for emergency department utilization was not verified. Similarly, our construct of housing instability may not have fully captured the extent and the severity of housing instability on the lives of the survey respondents. However, the HCPS utilized previously validated survey questions from similar nationally representative datasets (such as NHIS, NHANES, and MEPS) and the constructs measured have been operationalized in a similar manner as previously studied.
+
+Despite these limitations, our data allowed us to measure the role of housing stability in influencing health care and in particular emergency department utilization. While no association was found, future studies should investigate whether significant interactions exist by race and sex, as previous literature has suggested.
